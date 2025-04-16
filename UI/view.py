@@ -1,5 +1,5 @@
 import flet as ft
-
+from database.corso_DAO import getAllCorsi
 
 class View(ft.UserControl):
     def __init__(self, page: ft.Page):
@@ -17,30 +17,48 @@ class View(ft.UserControl):
         self.btn_hello = None
         self.txt_result = None
         self.txt_container = None
+        self._page.horizontal_alignment = 'CENTER'
 
     def load_interface(self):
         """Function that loads the graphical elements of the view"""
         # title
-        self._title = ft.Text("Hello World", color="blue", size=24)
+        self._title = ft.Text("App gestione studenti", color="blue", size=24)
         self._page.controls.append(self._title)
 
         #ROW with some controls
         # text field for the name
-        self.txt_name = ft.TextField(
-            label="name",
-            width=200,
-            hint_text="Insert a your name"
+
+        #POPOLO IL MENU A TENDINA
+        corsi = getAllCorsi()
+        options = []
+        for corso in corsi.keys():
+            option = ft.dropdown.Option(key= corso, text=corsi[corso].__str__())
+            options.append(option)
+        self._dropdown = ft.Dropdown(
+            label="Scegli un'opzione",
+            options=options,
+            on_change=self.controller.on_change_dropdown
         )
-
-        # button for the "hello" reply
-        self.btn_hello = ft.ElevatedButton(text="Hello", on_click=self._controller.handle_hello)
-        row1 = ft.Row([self.txt_name, self.btn_hello],
+        self._btnCercaIscritti=ft.ElevatedButton(text="Cerca iscritti", on_click=self.controller.on_cercaIscritti)
+        row1 = ft.Row([self._dropdown, self._btnCercaIscritti],
                       alignment=ft.MainAxisAlignment.CENTER)
-        self._page.controls.append(row1)
+        #row 2 text field
+        self._txtMat = ft.TextField(label= "Matricola", color="blue")
+        self._txtNome = ft.TextField(label= "Nome", color="blue", read_only=True)
+        self._txtCognome = ft.TextField(label= "Cognome", color="blue", read_only=True)
 
-        # List View where the reply is printed
-        self.txt_result = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-        self._page.controls.append(self.txt_result)
+        row2 = ft.Row([self._txtMat, self._txtNome, self._txtCognome], alignment=ft.MainAxisAlignment.CENTER)
+
+        #row 3 buttons
+        self._btnCercaStudente = ft.ElevatedButton(text="Cerca studente", on_click=self.controller.on_cercaStudente)
+        self._btnCercaCorsi = ft.ElevatedButton(text="Cerca corsi", on_click=self.controller.on_cercaCorsi)
+        self._btnIscrivi = ft.ElevatedButton(text="Iscrivi")
+        self._btnReset = ft.ElevatedButton(text="Reset", on_click=self.controller.on_reset)
+
+        row3 = ft.Row([self._btnCercaStudente, self._btnCercaCorsi, self._btnIscrivi, self._btnReset], alignment=ft.MainAxisAlignment.CENTER)
+
+        self._page.add(row1, row2, row3)
+
         self._page.update()
 
     @property
@@ -54,13 +72,6 @@ class View(ft.UserControl):
     def set_controller(self, controller):
         self._controller = controller
 
-    def create_alert(self, message):
-        """Function that opens a popup alert window, displaying a message
-        :param message: the message to be displayed"""
-        dlg = ft.AlertDialog(title=ft.Text(message))
-        self._page.dialog = dlg
-        dlg.open = True
-        self._page.update()
 
     def update_page(self):
         self._page.update()

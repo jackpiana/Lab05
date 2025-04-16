@@ -1,18 +1,18 @@
 # Add whatever it is needed to interface with the DB Table corso
 
 from database.DB_connect import get_connection
-from model.corso import Corso
+from model.Iscrizione import Iscrizione
 
-def getAllCorsi():
+def getAllIscrizioni():
     con = get_connection()
     cursor = con.cursor()
-    query = "SELECT * FROM corso"
+    query = "SELECT * FROM iscrizione"
     cursor.execute(query)
     results = cursor.fetchall()
-    corsi = {}
+    iscrizioni = []
     for row in results:
-        corso = Corso(row[0], row[1], row[2], row[3])
-        corsi[row[0]] = corso
+        iscrizione = Iscrizione(row[0], row[1])
+        iscrizioni.append(iscrizione)
     cursor.close()
     con.close()
-    return corsi
+    return iscrizioni

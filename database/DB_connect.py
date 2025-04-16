@@ -1,11 +1,13 @@
 import mysql.connector
 from mysql.connector import errorcode
 
-
 def get_connection() -> mysql.connector.connection:
     try:
         cnx = mysql.connector.connect(
-            option_files='./database/connector.cnf'
+            user = "root",
+            password = "1443Jack",
+            host = "localhost",
+            database = "iscritticorsi"
         )
         return cnx
     except mysql.connector.Error as err:
